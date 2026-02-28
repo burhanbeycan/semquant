@@ -8,7 +8,9 @@ from pathlib import Path
 
 import pandas as pd
 import streamlit as st
+import imageio.v3 as iio
 
+from examples.generate_synthetic import synthetic_fibers, synthetic_particles, synthetic_pores
 from semquant.defaults import load_default_config
 from semquant.pipeline import analyze
 
@@ -46,6 +48,21 @@ with st.sidebar:
     make_pdf = st.checkbox("Make PDF report", value=True)
 
 uploaded = st.file_uploader("Upload an SEM image (png/jpg/tif)", type=["png", "jpg", "jpeg", "tif", "tiff", "bmp"])
+with st.expander("No SEM file yet? Try a built-in demo image"):
+    st.caption("Generate a synthetic SEM-like image and run the same pipeline with one click.")
+    use_demo = st.button("Use demo image")
+
+if use_demo:
+    demo_builders = {
+        "pores": synthetic_pores,
+        "particles": synthetic_particles,
+        "fibers": synthetic_fibers,
+    }
+    demo_img = (demo_builders[mode](seed=42) * 255).astype("uint8")
+    demo_bytes = iio.imwrite("<bytes>", demo_img, extension=".png")
+    uploaded = io.BytesIO(demo_bytes)
+    uploaded.name = f"demo_{mode}.png"
+    st.info(f"Using generated demo image: {uploaded.name}")
 
 if uploaded is None:
     st.info("Upload an SEM image to begin.")
