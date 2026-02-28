@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SEMQuant Demo</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; background: #f7f9fc; color: #1c2530; }
+    .wrap { max-width: 1100px; margin: 0 auto; }
+    h1 { margin-bottom: 8px; }
+    .controls { display: flex; gap: 12px; align-items: center; margin: 16px 0 24px; }
+    select { font-size: 16px; padding: 6px 10px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+    .card { background: #fff; border: 1px solid #dde4ee; border-radius: 10px; padding: 12px; }
+    .card h3 { margin: 0 0 8px; font-size: 16px; }
+    img { width: 100%; border-radius: 6px; border: 1px solid #e6ecf3; }
+    pre { background: #0f1722; color: #d6e0f0; padding: 12px; border-radius: 8px; overflow-x: auto; }
+    a.btn { display:inline-block; text-decoration:none; background:#1769e0; color:#fff; padding:10px 14px; border-radius:8px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>SEMQuant Interactive Demo (Static GitHub Pages)</h1>
+    <p>No upload needed here. This page shows precomputed demo runs for pores, particles, and fibers.</p>
+    <p><a class="btn" href="../../">← Back to project page</a></p>
+
+    <div class="controls">
+      <label for="mode"><strong>Demo mode:</strong></label>
+      <select id="mode">
+        <option value="pores">pores</option>
+        <option value="particles">particles</option>
+        <option value="fibers">fibers</option>
+      </select>
+    </div>
+
+    <div class="grid">
+      <div class="card"><h3>Input</h3><img id="img-input" alt="Input SEM-like image" /></div>
+      <div class="card"><h3>Mask</h3><img id="img-mask" alt="Binary mask" /></div>
+      <div class="card"><h3>Overlay</h3><img id="img-overlay" alt="Overlay output" /></div>
+      <div class="card"><h3>Diameter histogram</h3><img id="img-hist" alt="Diameter histogram" /></div>
+    </div>
+
+    <h2>Summary</h2>
+    <pre id="summary"></pre>
+  </div>
+
+  <script>
+    const modeSelect = document.getElementById('mode');
+    const imgInput = document.getElementById('img-input');
+    const imgMask = document.getElementById('img-mask');
+    const imgOverlay = document.getElementById('img-overlay');
+    const imgHist = document.getElementById('img-hist');
+    const summary = document.getElementById('summary');
+
+    let summaryData = {};
+
+    async function loadSummary() {
+      const res = await fetch('./summary.json');
+      summaryData = await res.json();
+      updateView();
+    }
+
+    function updateView() {
+      const mode = modeSelect.value;
+      const base = `./assets/${mode}`;
+      imgInput.src = `${base}/01_original.png`;
+      imgMask.src = `${base}/02_mask.png`;
+      imgOverlay.src = `${base}/03_overlay.png`;
+      imgHist.src = `${base}/hist_diameter.png`;
+      summary.textContent = JSON.stringify(summaryData[mode], null, 2);
+    }
+
+    modeSelect.addEventListener('change', updateView);
+    loadSummary();
+  </script>
+</body>
+</html>
