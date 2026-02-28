@@ -1,0 +1,31 @@
+# SEMQuant default configuration
+# All distances are in micrometers (µm) unless specified.
+
+analysis:
+  mode: pores                 # pores | particles | fibers
+  threshold_method: otsu      # otsu | yen | sauvola
+  invert: false               # invert the binary mask after thresholding
+  gaussian_sigma: 1.0         # smoothing before threshold
+  exclude_bottom_fraction: 0.12  # crop this fraction from the bottom (to remove scale bars/legends)
+
+cleanup:
+  min_object_area_px: 80      # remove objects smaller than this (in pixels)
+  remove_border_objects: true # remove objects touching the ROI border
+
+scale:
+  # Option A: known pixel size directly (µm/px). If not null, this overrides scale-bar detection.
+  pixel_size_um_per_px: null
+
+  # Option B: detect scale bar in the image and compute pixel size from a known real length.
+  scale_bar:
+    enabled: true
+    known_length: 1.0   # e.g., 1.0
+    unit: um            # nm | um | mm
+    search_bottom_fraction: 0.22  # search region at bottom for the bar
+    min_aspect_ratio: 8.0         # bar should be long and thin
+    min_area_px: 250              # ignore tiny bright blobs
+
+output:
+  dpi: 300
+  make_pdf_report: true
+  save_intermediate: true
